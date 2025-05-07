@@ -6,10 +6,12 @@ import SellerLayout from '../layout/seller/SellerLayout';
 import SellerDashboard from '../pages/seller/SellerDashboard';
 import UploadInvoice from '../pages/seller/UploadInvoice';
 import BidsAndOffers from '../pages/seller/BidsAndOffers';
+import LoginPage from '../pages/LoginPage';
 
 export const AppRoute = () => (
   <Routes>
     <Route path="/" element={<LandingPage />} />
+    <Route path="/login" element={<LoginPage />} />
     <Route path="/register/supplier" element={<SupplierRegister />} />
     <Route path="/register/buyer" element={<BuyerRegister />} />
     
