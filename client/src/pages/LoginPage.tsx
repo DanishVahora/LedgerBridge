@@ -24,7 +24,7 @@ const LoginPage = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 5000,
+    autoplaySpeed: 1000,
     arrows: false,
     customPaging: (i: number) => (
       <div className="w-2 h-2 rounded-full bg-white/50 hover:bg-white/80 transition-all duration-200" />
@@ -81,7 +81,7 @@ const LoginPage = () => {
               description: 'Receive funds within 24-48 hours'
             },
             {
-              image: '/slider3.jpg',
+              image: '/Car2.jpeg',
               title: 'Secure Platform',
               description: 'Bank-grade security for your transactions'
             }

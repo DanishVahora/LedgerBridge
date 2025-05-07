@@ -1,3 +1,4 @@
+
 import { Routes, Route } from 'react-router-dom';
 import SupplierRegister from '../pages/RegisterSupplier';
 import BuyerRegister from '../pages/RegisterBuyer';
@@ -6,15 +7,17 @@ import SellerLayout from '../layout/seller/SellerLayout';
 import SellerDashboard from '../pages/seller/SellerDashboard';
 import UploadInvoice from '../pages/seller/UploadInvoice';
 import BidsAndOffers from '../pages/seller/BidsAndOffers';
-import LoginPage from '../pages/LoginPage';
+import FinancierRegister from '../pages/RegisterFinancier';
+import VerificationPage from '../pages/VerificationPage';
 
 export const AppRoute = () => (
   <Routes>
     <Route path="/" element={<LandingPage />} />
-    <Route path="/login" element={<LoginPage />} />
     <Route path="/register/supplier" element={<SupplierRegister />} />
     <Route path="/register/buyer" element={<BuyerRegister />} />
-    
+    <Route path="/register/financier" element={<FinancierRegister />} />
+    <Route path="verify" element={<VerificationPage />} />
+
     {/* Seller Routes */}
     <Route path="/seller" element={<SellerLayout />}>
       <Route path="dashboard" element={<SellerDashboard />} />
