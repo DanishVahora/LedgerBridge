@@ -1,0 +1,14 @@
+{
+    "builds": [
+      {
+        "src": "package.json",
+        "use": "@vercel/static-build",
+        "config": { "distDir": "dist" }
+      }
+    ],
+    "routes": [
+      { "src": "/(.*)\\.(js|css|png|jpg|svg)$", "headers": { "cache-control": "public, max-age=31536000, immutable" }, "dest": "/$1.$2" },
+      { "src": "/(.*)", "dest": "/index.html" }
+    ]
+  }
+  
