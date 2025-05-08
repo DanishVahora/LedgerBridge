@@ -14,7 +14,13 @@ import InvoiceApproval from '../pages/buyer/InvoiceApproval';
 import InvoiceStatusPage from '../pages/buyer/InvoiceStatus';
 import FinancierLayout from '../layout/financier/FinancierLayout';
 import FinancierDashboard from '../pages/financier/FinancierDashboard';
-import NewRequest from '../pages/financier/NewRequest';
+import FactoringRequest from '../pages/financier/FactoringRequest';
+
+import ReFactoringRequest from '../pages/financier/ReFactoringRequest';
+import PendingPayment from '../pages/financier/PendingPayment';
+import DuePayments from '../pages/financier/DuePayments';
+import FinancierHistory from '../pages/financier/FinancierHistory';
+
 
 export const AppRoute = () => (
   <Routes>
@@ -42,9 +48,13 @@ export const AppRoute = () => (
 
     {/* Financier Routes */}
     <Route path="/financier" element={<FinancierLayout />}>
-      <Route path="dashboard" element={<FinancierDashboard/>}/>
-      <Route path="factoring/requests" element={<NewRequest/>}/>
-
+      <Route path="dashboard" element={<FinancierDashboard />} />
+      <Route path="invoices/factoring" element={<FactoringRequest />} />
+      <Route path="invoices/reverse" element={<ReFactoringRequest />} />
+      <Route path="active/pending-payments" element={<PendingPayment />} />
+      <Route path="active/collections" element={<DuePayments />} />
+      <Route path="history" element={<FinancierHistory />} />
+      
     </Route>
 
     <Route path="*" element={<LandingPage />} />

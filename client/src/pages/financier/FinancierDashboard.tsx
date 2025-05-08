@@ -242,7 +242,7 @@ const FinancierDashboard = () => {
       </div>
 
       {/* Recent Requests */}
-      <div className="bg-white rounded-xl p-6 shadow-md">
+      {/* <div className="bg-white rounded-xl p-6 shadow-md">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-semibold text-gray-800">Recent Requests</h2>
           <button className="text-[#006A71] hover:text-[#48A6A7] flex items-center text-sm">
@@ -308,7 +308,7 @@ const FinancierDashboard = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

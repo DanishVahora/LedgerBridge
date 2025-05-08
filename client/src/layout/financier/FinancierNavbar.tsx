@@ -1,22 +1,15 @@
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  FileText, 
-  Building,
-  Receipt,
-  Users,
-  LineChart,
-  Settings,
+  FileText,
+  WalletCards,
+  History,
+  GanttChartSquare,
+  BadgeDollarSign,
   LogOut,
   ChevronRight,
   X,
-  BriefcaseIcon,
-  History,
-  FileCheck,
-  Calculator,
-  Wallet,
-  PieChart,
-  BadgeDollarSign
+  CheckSquare
 } from 'lucide-react';
 
 interface FinancierNavbarProps {
@@ -31,87 +24,41 @@ const FinancierNavbar = ({ onClose }: FinancierNavbarProps) => {
       path: '/financier/dashboard'
     },
     {
-      title: 'Invoice Factoring',
-      icon: <Receipt size={20} />,
+      title: 'New Invoices',
+      icon: <FileText size={20} />,
       subItems: [
         {
-          title: 'New Requests',
-          path: '/financier/factoring/requests',
-          icon: <FileText size={20} />
-        },
-        {
-          title: 'Active Deals',
-          path: '/financier/factoring/active',
-          icon: <FileCheck size={20} />
-        },
-        {
-          title: 'Risk Assessment',
-          path: '/financier/factoring/risk',
-          icon: <Calculator size={20} />
-        },
-        {
-          title: 'Supplier Management',
-          path: '/financier/factoring/suppliers',
-          icon: <Users size={20} />
-        }
-      ]
-    },
-    {
-      title: 'Reverse Factoring',
-      icon: <Building size={20} />,
-      subItems: [
-        {
-          title: 'Buyer Programs',
-          path: '/financier/reverse/programs',
-          icon: <BriefcaseIcon size={20} />
-        },
-        {
-          title: 'Supplier Onboarding',
-          path: '/financier/reverse/suppliers',
-          icon: <Users size={20} />
-        },
-        {
-          title: 'Invoice Processing',
-          path: '/financier/reverse/invoices',
-          icon: <FileCheck size={20} />
-        },
-        {
-          title: 'Credit Limits',
-          path: '/financier/reverse/credit-limits',
+          title: 'Factoring Requests',
+          path: '/financier/invoices/factoring',
           icon: <BadgeDollarSign size={20} />
+        },
+        {
+          title: 'Reverse Factoring',
+          path: '/financier/invoices/reverse',
+          icon: <GanttChartSquare size={20} />
         }
       ]
     },
     {
-      title: 'Portfolio',
-      icon: <Wallet size={20} />,
-      path: '/financier/portfolio'
-    },
-    {
-      title: 'Analytics',
-      icon: <PieChart size={20} />,
+      title: 'Active Deals',
+      icon: <WalletCards size={20} />,
       subItems: [
         {
-          title: 'Performance',
-          path: '/financier/analytics/performance',
-          icon: <LineChart size={20} />
+          title: 'Pending Payments',
+          path: '/financier/active/pending-payments',
+          icon: <BadgeDollarSign size={20} />
         },
         {
-          title: 'Risk Metrics',
-          path: '/financier/analytics/risk',
-          icon: <Calculator size={20} />
+          title: 'Due Collections',
+          path: '/financier/active/collections',
+          icon: <CheckSquare size={20} />
         }
       ]
     },
     {
       title: 'Transaction History',
       icon: <History size={20} />,
-      path: '/financier/transactions'
-    },
-    {
-      title: 'Settings',
-      icon: <Settings size={20} />,
-      path: '/financier/settings'
+      path: '/financier/history'
     }
   ];
 
@@ -162,14 +109,9 @@ const FinancierNavbar = ({ onClose }: FinancierNavbarProps) => {
                           transform hover:scale-[1.02] hover:-translate-y-0.5
                         `}
                       >
-                        <div className="transform transition-transform duration-300 group-hover:scale-110">
-                          {subItem.icon}
-                        </div>
+                        {subItem.icon}
                         <span>{subItem.title}</span>
-                        <ChevronRight 
-                          size={16} 
-                          className="ml-auto transform transition-transform duration-300 opacity-0 group-hover:opacity-100" 
-                        />
+                        <ChevronRight size={16} className="ml-auto opacity-0 group-hover:opacity-100" />
                       </NavLink>
                     ))}
                   </div>
@@ -187,14 +129,9 @@ const FinancierNavbar = ({ onClose }: FinancierNavbarProps) => {
                     transform hover:scale-[1.02] hover:-translate-y-0.5
                   `}
                 >
-                  <div className="transform transition-transform duration-300 group-hover:scale-110">
-                    {item.icon}
-                  </div>
+                  {item.icon}
                   <span>{item.title}</span>
-                  <ChevronRight 
-                    size={16} 
-                    className="ml-auto transform transition-transform duration-300 opacity-0 group-hover:opacity-100" 
-                  />
+                  <ChevronRight size={16} className="ml-auto opacity-0 group-hover:opacity-100" />
                 </NavLink>
               )}
             </div>
@@ -210,9 +147,7 @@ const FinancierNavbar = ({ onClose }: FinancierNavbarProps) => {
                    text-[#9ACBD0] hover:bg-[#48A6A7]/20 transition-all duration-300
                    transform hover:scale-[1.02] group"
         >
-          <div className="transform transition-transform duration-300 group-hover:scale-110">
-            <LogOut size={20} />
-          </div>
+          <LogOut size={20} />
           <span>Logout</span>
         </button>
       </div>
