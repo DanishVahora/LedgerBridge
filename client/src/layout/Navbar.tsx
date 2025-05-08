@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, Menu, X, Phone, Mail, MessageSquare } from 'lucide-react';
+import { ChevronDown, Menu, X,  } from 'lucide-react';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -7,7 +7,7 @@ export default function Navbar() {
   const [registerDropdownOpen, setRegisterDropdownOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const toggleDropdown = (dropdown) => {
+  const toggleDropdown = (dropdown:any) => {
     setActiveDropdown(activeDropdown === dropdown ? null : dropdown);
   };
 
