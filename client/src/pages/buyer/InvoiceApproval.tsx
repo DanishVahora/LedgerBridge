@@ -10,7 +10,8 @@ import {
   DollarSign,
   Clock,
   Building,
-  FileCheck
+  FileCheck,
+  Search
 } from 'lucide-react';
 
 interface Invoice {
@@ -32,6 +33,17 @@ interface Invoice {
     rate: number;
     amount: number;
   }[];
+  factoringType: 'factoring' | 'reverse_factoring';
+  financier?: {
+    name: string;
+    interestRate: number;
+  };
+  timeline: {
+    action: string;
+    date: string;
+    user: string;
+    remark?: string;
+  }[];
 }
 
 const InvoiceApproval = () => {
@@ -41,6 +53,7 @@ const InvoiceApproval = () => {
   const [remark, setRemark] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [factoringFilter, setFactoringFilter] = useState<'all' | 'factoring' | 'reverse_factoring'>('all');
 
   // Mock data
   const invoices: Invoice[] = [
@@ -70,9 +83,67 @@ const InvoiceApproval = () => {
           rate: 45000,
           amount: 135000
         }
+      ],
+      factoringType: 'factoring',
+      financier: {
+        name: 'Financier A',
+        interestRate: 5.5
+      },
+      timeline: [
+        {
+          action: 'submitted',
+          date: '2025-05-01',
+          user: 'User A'
+        },
+        {
+          action: 'reviewed',
+          date: '2025-05-05',
+          user: 'User B',
+          remark: 'Looks good'
+        }
       ]
     },
-    // Add more mock invoices...
+    {
+      id: '2',
+      invoiceNumber: 'INV-2025-002',
+      seller: {
+        name: 'ABC Corp',
+        gstin: '27BBBBB0000B1Z5'
+      },
+      amount: 150000,
+      issueDate: '2025-05-10',
+      dueDate: '2025-06-20',
+      status: 'approved',
+      pdfUrl: '/invoices/INV-2025-002.pdf',
+      description: 'Office supplies',
+      items: [
+        {
+          description: 'Office Chair',
+          quantity: 10,
+          rate: 5000,
+          amount: 50000
+        },
+        {
+          description: 'Office Desk',
+          quantity: 5,
+          rate: 20000,
+          amount: 100000
+        }
+      ],
+      factoringType: 'reverse_factoring',
+      financier: {
+        name: 'ABC Finance',
+        interestRate: 12.5
+      },
+      timeline: [
+        {
+          action: 'Submitted',
+          date: '2025-05-01',
+          user: 'John Doe',
+          remark: 'Initial submission'
+        }
+      ]
+    }
   ];
 
   const handleApprove = (invoice: Invoice) => {
@@ -99,104 +170,191 @@ const InvoiceApproval = () => {
     }
   };
 
+  // Summary stats calculation
+  const stats = {
+    pendingCount: invoices.filter(i => i.status === 'pending').length,
+    totalValue: invoices.reduce((sum, i) => sum + i.amount, 0),
+    factoring: invoices.filter(i => i.factoringType === 'factoring').length,
+    reverseFactoring: invoices.filter(i => i.factoringType === 'reverse_factoring').length
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      {/* Header */}
+      {/* Enhanced Header with Stats */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Invoice Approval</h1>
-        <p className="text-gray-600 mt-2">Review and approve invoices from your sellers</p>
+        <p className="text-gray-600 mt-2">Review and process invoice financing requests</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+          <div className="bg-gradient-to-br from-[#006A71] to-[#48A6A7] rounded-xl p-6 text-white">
+            <p className="text-sm opacity-80">Pending Approvals</p>
+            <h3 className="text-2xl font-bold mt-1">{stats.pendingCount}</h3>
+            <p className="text-sm mt-2 opacity-80">Require action</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 border border-[#F2EFE7]">
+            <p className="text-sm text-gray-600">Total Value</p>
+            <h3 className="text-2xl font-bold text-gray-800 mt-1">
+              ₹{(stats.totalValue / 100000).toFixed(1)}L
+            </h3>
+            <p className="text-sm mt-2 text-[#006A71]">Current month</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 border border-[#F2EFE7]">
+            <p className="text-sm text-gray-600">Factoring Requests</p>
+            <h3 className="text-2xl font-bold text-gray-800 mt-1">{stats.factoring}</h3>
+            <p className="text-sm mt-2 text-[#006A71]">Direct financing</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 border border-[#F2EFE7]">
+            <p className="text-sm text-gray-600">Reverse Factoring</p>
+            <h3 className="text-2xl font-bold text-gray-800 mt-1">{stats.reverseFactoring}</h3>
+            <p className="text-sm mt-2 text-[#006A71]">Buyer program</p>
+          </div>
+        </div>
       </div>
 
-      {/* Filters and Search */}
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex gap-2">
-          {['all', 'pending', 'approved', 'rejected'].map((status) => (
-            <button
-              key={status}
-              onClick={() => setFilterStatus(status as any)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                ${filterStatus === status 
-                  ? 'bg-[#006A71] text-white' 
-                  : 'bg-white text-gray-600 hover:bg-gray-50'}`}
-            >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </button>
-          ))}
-        </div>
-        <div className="w-full sm:w-auto">
-          <input
-            type="text"
-            placeholder="Search invoices..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006A71] focus:border-transparent"
-          />
-        </div>
-      </div>
-
-      {/* Invoices Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {invoices.map((invoice) => (
-          <div 
-            key={invoice.id}
-            className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="font-semibold text-lg text-gray-800">
-                  {invoice.invoiceNumber}
-                </h3>
-                <p className="text-gray-600">{invoice.seller.name}</p>
-              </div>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium
-                ${invoice.status === 'approved' ? 'bg-green-100 text-green-800' :
-                  invoice.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                  'bg-yellow-100 text-yellow-800'}`}
-              >
-                {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-              </span>
+      {/* Enhanced Filters */}
+      <div className="bg-white rounded-xl p-6 shadow-sm mb-8">
+        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+          <div className="flex flex-wrap gap-4">
+            {/* Factoring Type Filter */}
+            <div className="flex rounded-lg bg-[#F2EFE7] p-1">
+              {[
+                { value: 'all', label: 'All Types' },
+                { value: 'factoring', label: 'Factoring' },
+                { value: 'reverse_factoring', label: 'Reverse Factoring' }
+              ].map((type) => (
+                <button
+                  key={type.value}
+                  onClick={() => setFactoringFilter(type.value as any)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                    ${factoringFilter === type.value
+                      ? 'bg-white text-[#006A71] shadow'
+                      : 'text-gray-600 hover:text-[#006A71]'}`}
+                >
+                  {type.label}
+                </button>
+              ))}
             </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center text-gray-600">
-                <DollarSign size={16} className="mr-2" />
-                <span>₹{invoice.amount.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center text-gray-600">
-                <Calendar size={16} className="mr-2" />
-                <span>Due: {new Date(invoice.dueDate).toLocaleDateString()}</span>
-              </div>
-            </div>
-
-            <div className="mt-6 flex gap-2">
-              <button
-                onClick={() => setShowPdfModal(true)}
-                className="flex-1 flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                <Eye size={16} className="mr-2" />
-                View PDF
-              </button>
-              {invoice.status === 'pending' && (
-                <>
-                  <button
-                    onClick={() => handleApprove(invoice)}
-                    className="flex-1 flex items-center justify-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                  >
-                    <CheckCircle size={16} className="mr-2" />
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleReject(invoice)}
-                    className="flex-1 flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                  >
-                    <XCircle size={16} className="mr-2" />
-                    Reject
-                  </button>
-                </>
-              )}
+            {/* Status Filter */}
+            <div className="flex rounded-lg bg-[#F2EFE7] p-1">
+              {[
+                { value: 'all', label: 'All Status' },
+                { value: 'pending', label: 'Pending' },
+                { value: 'approved', label: 'Approved' },
+                { value: 'rejected', label: 'Rejected' }
+              ].map((status) => (
+                <button
+                  key={status.value}
+                  onClick={() => setFilterStatus(status.value as any)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                    ${filterStatus === status.value
+                      ? 'bg-white text-[#006A71] shadow'
+                      : 'text-gray-600 hover:text-[#006A71]'}`}
+                >
+                  {status.label}
+                </button>
+              ))}
             </div>
           </div>
-        ))}
+
+          {/* Search */}
+          <div className="relative w-full md:w-auto">
+            <input
+              type="text"
+              placeholder="Search invoices..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full md:w-64 pl-10 pr-4 py-2 border border-gray-200 rounded-lg 
+                       focus:ring-2 focus:ring-[#006A71] focus:border-transparent"
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Invoice Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {invoices
+          .filter(invoice => 
+            (factoringFilter === 'all' || invoice.factoringType === factoringFilter) &&
+            (filterStatus === 'all' || invoice.status === filterStatus) &&
+            (invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             invoice.seller.name.toLowerCase().includes(searchTerm.toLowerCase()))
+          )
+          .map((invoice) => (
+            <div 
+              key={invoice.id}
+              className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-200"
+            >
+              {/* Existing invoice card content with added factoring type badge */}
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium
+                      ${invoice.factoringType === 'factoring' 
+                        ? 'bg-purple-100 text-purple-800' 
+                        : 'bg-blue-100 text-blue-800'}`}
+                    >
+                      {invoice.factoringType === 'factoring' ? 'Factoring' : 'Reverse Factoring'}
+                    </span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium
+                      ${invoice.status === 'approved' ? 'bg-green-100 text-green-800' :
+                        invoice.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                        'bg-yellow-100 text-yellow-800'}`}
+                    >
+                      {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                    </span>
+                  </div>
+                  <h3 className="font-semibold text-lg text-gray-800">
+                    {invoice.invoiceNumber}
+                  </h3>
+                  <p className="text-gray-600">{invoice.seller.name}</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-600">
+                  <DollarSign size={16} className="mr-2" />
+                  <span>₹{invoice.amount.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center text-gray-600">
+                  <Calendar size={16} className="mr-2" />
+                  <span>Due: {new Date(invoice.dueDate).toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              <div className="mt-6 flex gap-2">
+                <button
+                  onClick={() => setShowPdfModal(true)}
+                  className="flex-1 flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <Eye size={16} className="mr-2" />
+                  View PDF
+                </button>
+                {invoice.status === 'pending' && (
+                  <>
+                    <button
+                      onClick={() => handleApprove(invoice)}
+                      className="flex-1 flex items-center justify-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                    >
+                      <CheckCircle size={16} className="mr-2" />
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleReject(invoice)}
+                      className="flex-1 flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                    >
+                      <XCircle size={16} className="mr-2" />
+                      Reject
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
       </div>
 
       {/* Remark Modal */}

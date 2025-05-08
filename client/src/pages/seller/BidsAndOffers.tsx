@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Eye, Check, X, TrendingUp, Clock, DollarSign } from 'lucide-react';
 
+
 interface Bid {
   id: string;
   buyerId: string;
@@ -11,6 +12,7 @@ interface Bid {
   status: 'pending' | 'accepted' | 'rejected';
   timestamp: string;
 }
+
 
 interface Invoice {
   id: string;
@@ -23,9 +25,11 @@ interface Invoice {
   bids: Bid[];
 }
 
+
 const BidsAndOffers = () => {
   const [activeTab, setActiveTab] = useState<'pending' | 'history'>('pending');
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+
 
   // Mock data - replace with API call
   const invoices: Invoice[] = [
@@ -52,15 +56,18 @@ const BidsAndOffers = () => {
     }
   ];
 
+
   const handleAcceptBid = (invoiceId: string, bidId: string) => {
     // Implement bid acceptance logic
     console.log('Accepting bid:', bidId, 'for invoice:', invoiceId);
   };
 
+
   const handleRejectBid = (invoiceId: string, bidId: string) => {
     // Implement bid rejection logic
     console.log('Rejecting bid:', bidId, 'for invoice:', invoiceId);
   };
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
@@ -70,6 +77,7 @@ const BidsAndOffers = () => {
         <p className="text-gray-600 mt-2">Manage your invoice trading activities</p>
       </div>
 
+
       {/* Tabs */}
       <div className="flex space-x-4 mb-6">
         {['pending', 'history'].map((tab) => (
@@ -77,14 +85,15 @@ const BidsAndOffers = () => {
             key={tab}
             onClick={() => setActiveTab(tab as 'pending' | 'history')}
             className={`px-6 py-3 rounded-lg font-medium transition-all duration-200
-              ${activeTab === tab 
-                ? 'bg-[#006A71] text-white shadow-lg transform -translate-y-0.5' 
+              ${activeTab === tab
+                ? 'bg-[#006A71] text-white shadow-lg transform -translate-y-0.5'
                 : 'bg-white text-gray-600 hover:bg-gray-50'}`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
+
 
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -111,6 +120,7 @@ const BidsAndOffers = () => {
                 </div>
               </div>
 
+
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center space-x-2">
                   <DollarSign size={20} className="text-[#006A71]" />
@@ -125,6 +135,7 @@ const BidsAndOffers = () => {
                   </span>
                 </div>
               </div>
+
 
               {/* Latest Bid Preview */}
               {invoice.bids[0] && (
@@ -163,6 +174,7 @@ const BidsAndOffers = () => {
           ))}
         </div>
 
+
         {/* Bid Details Panel */}
         <div className="lg:col-span-1">
           {selectedInvoice ? (
@@ -182,13 +194,14 @@ const BidsAndOffers = () => {
                     </div>
                     <span className={`
                       px-3 py-1 rounded-full text-sm font-medium
-                      ${bid.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
-                        bid.status === 'accepted' ? 'bg-green-100 text-green-800' : 
+                      ${bid.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        bid.status === 'accepted' ? 'bg-green-100 text-green-800' :
                         'bg-red-100 text-red-800'}
                     `}>
                       {bid.status.charAt(0).toUpperCase() + bid.status.slice(1)}
                     </span>
                   </div>
+
 
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
@@ -204,6 +217,7 @@ const BidsAndOffers = () => {
                       </p>
                     </div>
                   </div>
+
 
                   {bid.status === 'pending' && (
                     <div className="flex space-x-2 mt-4">
@@ -239,5 +253,6 @@ const BidsAndOffers = () => {
     </div>
   );
 };
+
 
 export default BidsAndOffers;
