@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -189,7 +189,7 @@ const BuyerRegister: React.FC = () => {
   const [otpType, setOtpType] = useState<"mobile" | "email">("mobile");
 
   // Registration success state
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [registrationSuccess,] = useState(false);
   const checkPan = async () => {
     if (PATTERNS.PAN.test(formData.buyerPan)) {
       try {
@@ -227,7 +227,8 @@ const BuyerRegister: React.FC = () => {
   const handleMobileBlur = () => checkMobile();
   // Handle form field changes
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
+    e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }> | 
+    { target: { name?: string; value: unknown } }
   ) => {
     const { name, value } = e.target;
     if (name) {
@@ -444,7 +445,6 @@ const BuyerRegister: React.FC = () => {
       setLoading(false);
     }
   };
-
 
   // Render the current step content
   const getStepContent = (step: number) => {

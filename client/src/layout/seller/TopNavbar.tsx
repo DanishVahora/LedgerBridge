@@ -21,7 +21,7 @@ interface Notification {
 const TopNavbar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([
+  const [notifications,] = useState<Notification[]>([
     {
       id: '1',
       title: 'New Bid Received',

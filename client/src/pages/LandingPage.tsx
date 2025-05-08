@@ -1,4 +1,3 @@
-import Navbar from "../layout/Navbar"
 import Layout from "../layout/Layout";
 import { useState, useEffect } from 'react';
 import { ArrowRight, CheckCircle, ChevronRight, BarChart3, Clock, Shield, Zap, Globe } from 'lucide-react';
@@ -212,7 +211,7 @@ export default function LandingPage() {
               ].map((feature, index) => (
                 <div
                   key={index}
-                  className={`bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 relative overflow-hidden transition-all duration-1000 ${isVisible.features ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
+                  className={`bg-white rounded-xl p-6 shadow-lg hover:shadow-xl  transform hover:-translate-y-1 relative overflow-hidden transition-all duration-1000 ${isVisible.features ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
                   style={{ transitionDelay: `${150 * index}ms` }}
                 >
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#9ACBD0]/10 to-transparent rounded-bl-full"></div>

@@ -131,7 +131,11 @@ const InvoiceApproval = () => {
       // e.g. refetch dashboard:
       await fetchDashboardData();
     } catch (err) {
-      console.error(err.response.data);
+      if (axios.isAxiosError(err) && err.response) {
+        console.error(err.response.data);
+      } else {
+        console.error(err);
+      }
       
       toast.error("Failed to submit decision");
     }

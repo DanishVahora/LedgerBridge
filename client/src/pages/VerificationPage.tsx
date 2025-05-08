@@ -46,8 +46,9 @@ export const VerificationPage: React.FC<VerificationPageProps> = () => {
       const role = sessionStorage.getItem("role");
 
       const { data } = await api.post(`/verify/${role}`, {
-        otp,
+       
         activationToken,
+        otp
       });
 
       console.log(data.username);

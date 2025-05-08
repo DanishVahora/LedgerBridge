@@ -16,4 +16,6 @@ public interface FinancierRepository extends JpaRepository<Financier, Long> {
     Financier findByUserNameOrContactEmail(@Param("usernameOrEmail") String usernameOrEmail);
 
     boolean existsByMobile(String phone);
+
+    Optional<Financier> findByUserName(String username);
 }

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import FinancierNavbar from './FinancierNavbar';
-import FinancierTopNavbar from './FinancierTopNavbar';
 
 const FinancierLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -28,7 +27,7 @@ const FinancierLayout = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <FinancierTopNavbar onMenuClick={() => setIsSidebarOpen(true)} />
+        {/* <FinancierTopNavbar onMenuClick={() => setIsSidebarOpen(true)} /> */}
         <main className="flex-1 overflow-auto p-6">
           <Outlet />
         </main>

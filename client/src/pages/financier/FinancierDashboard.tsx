@@ -1,19 +1,14 @@
 import { 
-  DollarSign, 
   TrendingUp, 
   Users, 
-  AlertCircle, 
   FileText,
-  Calendar,
   Wallet,
   Activity,
-  ArrowUpRight,
   Building,
   BadgeDollarSign
 } from 'lucide-react';
 import { 
-  AreaChart, 
-  Area, 
+ 
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -24,7 +19,6 @@ import {
   Cell,
   BarChart,
   Bar,
-  Legend
 } from 'recharts';
 
 interface DashboardStats {
@@ -67,24 +61,24 @@ const FinancierDashboard = () => {
     { name: 'Others', value: 5, color: '#004a4f' }
   ];
 
-  const recentRequests = [
-    {
-      id: 'REQ001',
-      type: 'Factoring',
-      company: 'Tech Manufacturing Ltd',
-      amount: 2500000,
-      date: '2025-05-08',
-      risk: 'Low'
-    },
-    {
-      id: 'REQ002',
-      type: 'Reverse Factoring',
-      company: 'Global Industries',
-      amount: 3800000,
-      date: '2025-05-08',
-      risk: 'Medium'
-    }
-  ];
+  // const recentRequests = [
+  //   {
+  //     id: 'REQ001',
+  //     type: 'Factoring',
+  //     company: 'Tech Manufacturing Ltd',
+  //     amount: 2500000,
+  //     date: '2025-05-08',
+  //     risk: 'Low'
+  //   },
+  //   {
+  //     id: 'REQ002',
+  //     type: 'Reverse Factoring',
+  //     company: 'Global Industries',
+  //     amount: 3800000,
+  //     date: '2025-05-08',
+  //     risk: 'Medium'
+  //   }
+  // ];
 
   const formatCurrency = (amount: number) => 
     `₹${(amount/100000).toFixed(1)}L`;

@@ -99,7 +99,7 @@ public class SupplierController {
 
 
             Notification notification = Notification.builder()
-                    .recipientUsername(bid.getFinancier().getUserName())
+                    .recipientUsername(bid.getFusername())
                     .message("Your bid for Invoice ID " + invoice.getId() + " has been accepted by the supplier.")
                     .seen(false)
                     .createdAt(LocalDateTime.now())
@@ -110,7 +110,7 @@ public class SupplierController {
             if (!invoice.isFactoring()) {
                 Notification buyerNotification = Notification.builder()
                         .recipientUsername(invoice.getBuyerusername())
-                        .message("Financier " + bid.getFinancier().getUserName() +
+                        .message("Financier " + bid.getFusername() +
                                 " will pay you amount " + bid.getBidAmount() +
                                 " for Invoice ID " + invoice.getInvoiceId())
                         .seen(false)
@@ -120,16 +120,23 @@ public class SupplierController {
             }
 
 
+
             transaction = Transaction.builder()
-                    .bid(bid)
-                    .invoice(invoice)
-                    .financier(bid.getFinancier())
+                    .bidId(bid.getId())
+                    .invoiceId(invoice.getId())
+                    .financierUsername(bid.getFusername()) // fixed line
                     .bidAmount(bid.getBidAmount())
                     .discountRate(bid.getDiscountRate())
                     .creditedTo(creditedTo)
                     .transactionTime(LocalDateTime.now())
+                    .status(Transaction.TransactionStatus.PENDING)
                     .notes("Bid accepted and funds credited to " + creditedTo)
                     .build();
+
+
+
+
+
 
 
             transactionRepository.save(transaction);

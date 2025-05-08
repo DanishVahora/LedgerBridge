@@ -1,17 +1,13 @@
 import { useState } from 'react';
 import { 
   FileText, 
-  Building, 
   DollarSign, 
   Calendar, 
   CheckCircle, 
   XCircle,
   AlertCircle,
-  ChevronDown,
   ArrowUpRight,
-  User,
   CreditCard,
-  FileCheck
 } from 'lucide-react';
 
 interface FinanceRequest {

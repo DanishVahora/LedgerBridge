@@ -1,6 +1,10 @@
 package com.codewithus.ledgerbridge.Entity;
+
+
 import jakarta.persistence.*;
 import lombok.*;
+
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -20,22 +24,16 @@ public class Transaction {
     private Long id;
 
 
-    // Reference to the bid
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bid_id", nullable = false)
-    private Bid bid;
+    @Column(name = "bid_id", nullable = false)
+    private Long bidId; // Store only the ID
 
 
-    // Reference to invoice (optional, but helpful)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invoice_id", nullable = false)
-    private Invoice invoice;
+    @Column(name = "invoice_id", nullable = false)
+    private Long invoiceId; // Store only the ID
 
 
-    // Reference to the financier who funded
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "financier_id", nullable = false)
-    private Financier financier;
+    @Column(name = "financier_username", nullable = false)
+    private String financierUsername; // Store only the username
 
 
     @Column(nullable = false)
@@ -54,6 +52,15 @@ public class Transaction {
     private LocalDateTime transactionTime;
 
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TransactionStatus status;
+
+
+    public enum TransactionStatus {
+        SUCCESS, PENDING, FAILED
+    }
     @Column
-    private String notes; // Optional field to log any additional data or remarks
+    private String notes;
 }
+

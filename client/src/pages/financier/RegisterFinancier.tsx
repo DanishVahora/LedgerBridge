@@ -142,7 +142,7 @@ const FinancierRegister: React.FC = () => {
   const [sendingOtp, setSendingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [otpType, setOtpType] = useState<'mobile' | 'email'>('mobile');
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [registrationSuccess, ] = useState(false);
 
   // Check PAN uniqueness
   const checkPan = async () => {
@@ -150,6 +150,7 @@ const FinancierRegister: React.FC = () => {
       try {
         const { data } = await api.get('/check/financier/pan', { params: { pan: formData.institutionPan } });
         setPanExists(data.exists);
+        console.log(mobileVerified);
         setErrors(prev => ({ ...prev, institutionPan: data.exists ? 'PAN already registered' : '' }));
       } catch {
         // ignore errors
@@ -173,7 +174,7 @@ const FinancierRegister: React.FC = () => {
   const handlePanBlur = () => checkPan();
   const handleMobileBlur = () => checkMobile();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }> | React.ChangeEvent<{ name?: string; value: unknown }> | { target: { name: string; value: unknown } }) => {
     const { name, value } = e.target;
     if (name) {
       setFormData(prev => ({ ...prev, [name]: value } as any));
@@ -351,14 +352,14 @@ const FinancierRegister: React.FC = () => {
                   startAdornment: <InputAdornment position="start">+91</InputAdornment>,
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Button
+                      {/* <Button
                         size="small"
                         onClick={() => sendOtp('mobile')}
                         disabled={sendingOtp || mobileVerified}
                         color={mobileVerified ? "success" : "primary"}
                       >
                         {sendingOtp && otpType === 'mobile' ? <CircularProgress size={20} /> : mobileVerified ? <><CheckCircle fontSize="small" /> Verified</> : 'Verify'}
-                      </Button>
+                      </Button> */}
                     </InputAdornment>
                   )
                 }}

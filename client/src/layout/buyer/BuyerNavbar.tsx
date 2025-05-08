@@ -2,7 +2,6 @@ import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard,
   ClipboardCheck,
-  FileText,
   Settings,
   LogOut,
   ChevronRight,

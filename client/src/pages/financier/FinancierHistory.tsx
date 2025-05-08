@@ -12,44 +12,40 @@ import {
   Cell,
   BarChart,
   Bar,
-  Legend
 } from 'recharts';
 import {
   TrendingUp,
   DollarSign,
   FileText,
-  PieChart as PieChartIcon,
   AlertCircle,
-  Calendar,
   ArrowUpRight,
-  Filter,
-  CheckCircle2,
+  
   BadgeDollarSign
 } from 'lucide-react';
 
-interface Transaction {
-  id: string;
-  date: string;
-  invoiceNumber: string;
-  amount: number;
-  type: 'factoring' | 'reverse_factoring';
-  profitAmount: number;
-  profitPercentage: number;
-  seller: {
-    name: string;
-    id: string;
-  };
-  buyer: {
-    name: string;
-    id: string;
-  };
-  status: 'completed' | 'defaulted';
-  paymentDate: string;
-}
+// interface Transaction {
+//   id: string;
+//   date: string;
+//   invoiceNumber: string;
+//   amount: number;
+//   type: 'factoring' | 'reverse_factoring';
+//   profitAmount: number;
+//   profitPercentage: number;
+//   seller: {
+//     name: string;
+//     id: string;
+//   };
+//   buyer: {
+//     name: string;
+//     id: string;
+//   };
+//   status: 'completed' | 'defaulted';
+//   paymentDate: string;
+// }
 
 const FinancierHistory = () => {
   const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y'>('3M');
-  const [filterType, setFilterType] = useState<'all' | 'factoring' | 'reverse_factoring'>('all');
+  // const [filterType, setFilterType] = useState<'all' | 'factoring' | 'reverse_factoring'>('all');
 
   // Mock data for charts
   const monthlyData = [

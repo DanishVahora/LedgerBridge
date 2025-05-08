@@ -1,17 +1,9 @@
 import { useState } from 'react';
 import { 
-  Clock, 
   DollarSign, 
-  AlertCircle, 
   Search,
-  Calendar,
-  FileText,
-  Building,
   ArrowUpRight,
-  Ban,
-  Phone,
-  Mail,
-  Circle
+ 
 } from 'lucide-react';
 
 interface Invoice {

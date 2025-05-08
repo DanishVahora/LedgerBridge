@@ -1,22 +1,12 @@
 import { useState } from 'react';
 import { 
-  Building, 
-  FileText, 
-  Calendar, 
+ 
   DollarSign, 
-  User, 
-  Phone, 
-  Mail,
-  ExternalLink,
-  Timer,
-  BadgeCheck,
+ 
   TrendingUp,
   X,
-  Percent,
-  AlertCircle,
   Briefcase,
   Users,
-  ChevronDown
 } from 'lucide-react';
 
 interface ReFactoringRequest {
@@ -63,7 +53,6 @@ interface ProgramBid {
 const ReFactoringRequest = () => {
   const [selectedProgram, setSelectedProgram] = useState<ReFactoringRequest | null>(null);
   const [showBidModal, setShowBidModal] = useState(false);
-  const [expandedProgram, setExpandedProgram] = useState<string | null>(null);
   const [bidData, setBidData] = useState<ProgramBid>({
     interestRate: '',
     creditLimit: '',
@@ -73,11 +62,7 @@ const ReFactoringRequest = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const formatCurrency = (amount: number) => 
-    `₹${(amount/100000).toFixed(1)}L`;
-
-  const calculateUtilization = (used: number, total: number) => 
-    ((used / total) * 100).toFixed(1);
+  
 
   const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

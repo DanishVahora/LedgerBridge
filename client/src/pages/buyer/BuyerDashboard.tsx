@@ -3,7 +3,6 @@ import {
   DollarSign,
   Clock,
   AlertCircle,
-  CheckCircle,
   Calendar,
   TrendingUp,
   CreditCard,
@@ -199,16 +198,7 @@ const BuyerDashboard = () => {
 
 
   // Icon mapping
-  const iconComponents = {
-    DollarSign: DollarSign,
-    Clock: Clock,
-    Calendar: Calendar,
-    CreditCard: CreditCard,
-    FileText: FileText,
-    CheckCircle: CheckCircle,
-    AlertCircle: AlertCircle,
-    TrendingUp: TrendingUp,
-  };
+  
 
 
   return (

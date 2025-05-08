@@ -1,292 +1,308 @@
-import { useState } from 'react';
-import { 
-  DollarSign, 
-  Calendar, 
-  Building,
+import { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  CalendarDays,
   AlertTriangle,
-  Bell,
   CheckCircle2,
-  Clock,
-  ArrowUpRight,
-  Filter,
-  Search,
-  FileText,
-  SendHorizonal,
-  PhoneCall
-} from 'lucide-react';
+  Trash2,
+  Edit,
+} from "lucide-react";
+
 
 interface DuePayment {
-  id: string;
+  id: number;
   invoiceNumber: string;
   amount: number;
   dueDate: string;
-  buyer: {
-    name: string;
-    creditRating: string;
-    contactPerson: string;
-    email: string;
-    phone: string;
-  };
-  invoice: {
-    number: string;
-    amount: number;
-    pdfUrl: string;
-    issueDate: string;
-  };
-  factoringType: 'factoring' | 'reverse_factoring';
-  status: 'upcoming' | 'overdue' | 'partially_paid';
-  daysOverdue?: number;
-  partialAmount?: number;
-  collectionAttempts: {
-    date: string;
-    method: 'email' | 'phone' | 'reminder';
-    response?: string;
-  }[];
+  status: "upcoming" | "overdue" | "paid";
+  buyerUsername: string;
+  financierUsername: string;
 }
 
+
+const api = axios.create({
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}/api/due-payments`,
+  headers: { "Content-Type": "application/json" },
+});
+
+
 const DuePayments = () => {
-  const [selectedPayment, setSelectedPayment] = useState<DuePayment | null>(null);
-  const [showReminderModal, setShowReminderModal] = useState(false);
-  const [filterStatus, setFilterStatus] = useState<'all' | 'upcoming' | 'overdue'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [search, setSearch] = useState("");
+  const [payments, setPayments] = useState<DuePayment[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [selectedPayment, setSelectedPayment] = useState<DuePayment | null>(
+    null
+  );
+  const [filter, setFilter] = useState("all"); // Filter payments: 'all', 'buyer', 'financier'
 
-  // Mock data - Replace with API call
-  const duePayments: DuePayment[] = [
-    {
-      id: 'DUE001',
-      invoiceNumber: 'INV2025001',
-      amount: 2500000,
-      dueDate: '2025-05-15',
-      buyer: {
-        name: 'Global Industries Ltd',
-        creditRating: 'AA+',
-        contactPerson: 'John Smith',
-        email: 'john.smith@global.com',
-        phone: '+91 98765 43210'
-      },
-      invoice: {
-        number: 'INV2025001',
-        amount: 2500000,
-        pdfUrl: '/invoices/INV2025001.pdf',
-        issueDate: '2025-04-15'
-      },
-      factoringType: 'reverse_factoring',
-      status: 'upcoming',
-      collectionAttempts: []
+
+  // Fetching all due payments
+  useEffect(() => {
+    const fetchPayments = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get("");
+        setPayments(response.data);
+        setError("");
+      } catch (err) {
+        setError("There was an error fetching the due payments");
+        console.error("Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPayments();
+  }, []);
+
+
+  const formatCurrency = (amount: number) => `₹${(amount / 1000).toFixed(1)}K`;
+
+
+  const statusColor = (status: string) => {
+    switch (status) {
+      case "overdue":
+        return "text-red-600";
+      case "paid":
+        return "text-green-600";
+      default:
+        return "text-yellow-600";
     }
-  ];
-
-  const formatCurrency = (amount: number) => 
-    `₹${(amount/100000).toFixed(1)}L`;
-
-  const getDaysRemaining = (dueDate: string) => {
-    const days = Math.ceil((new Date(dueDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
-    return days;
   };
 
-  const getStatusColor = (status: string, daysRemaining: number) => {
-    if (status === 'overdue') return 'text-red-600 bg-red-50 border-red-100';
-    if (daysRemaining <= 7) return 'text-yellow-600 bg-yellow-50 border-yellow-100';
-    return 'text-green-600 bg-green-50 border-green-100';
+
+  const statusIcon = (status: string) => {
+    switch (status) {
+      case "overdue":
+        return <AlertTriangle className="w-4 h-4 mr-1 text-red-500" />;
+      case "paid":
+        return <CheckCircle2 className="w-4 h-4 mr-1 text-green-500" />;
+      default:
+        return <CalendarDays className="w-4 h-4 mr-1 text-yellow-500" />;
+    }
   };
 
-  const handleSendReminder = async (payment: DuePayment) => {
+
+  const handlePayment = async (id: number) => {
     try {
-      // API call simulation
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log('Reminder sent for:', payment.id);
-      alert('Payment reminder sent successfully!');
+      
+
+      setPayments((prevPayments) =>
+        prevPayments.map((payment) =>
+          payment.id === id ? { ...payment, status: "paid" } : payment
+        )
+      );
+
+
+      alert("Payment successfully marked as paid!");
     } catch (error) {
-      console.error('Error sending reminder:', error);
-      alert('Failed to send reminder. Please try again.');
+      console.error("Error marking payment as paid:", error);
+      alert("Failed to mark payment as paid. Please try again.");
     }
   };
+
+
+  const handleDelete = async (id: number) => {
+    if (window.confirm("Are you sure you want to delete this payment?")) {
+      try {
+        await api.delete(`/${id}`);
+        setPayments((prevPayments) =>
+          prevPayments.filter((payment) => payment.id !== id)
+        );
+        alert("Payment deleted successfully.");
+      } catch (error) {
+        console.error("Error deleting payment:", error);
+        alert("Failed to delete the payment. Please try again.");
+      }
+    }
+  };
+
+
+  const handleEdit = (payment: DuePayment) => {
+    setSelectedPayment(payment);
+  };
+
+
+  // Function to create a random due payment
+  const createRandomDuePayment = async () => {
+    const randomDuePayment = {
+      invoiceNumber: `INV-${Math.floor(Math.random() * 10000)}`,
+      amount: Math.floor(Math.random() * 10000) + 1000, // Amount between 1000 and 11000
+      dueDate: new Date(
+        new Date().setDate(new Date().getDate() + Math.floor(Math.random() * 30))
+      ).toISOString().split("T")[0], // Random due date in the next 30 days
+      status: Math.random() > 0.5 ? "upcoming" : "overdue", // Random status
+      buyerUsername: `buyer${Math.floor(Math.random() * 1000)}`,
+      financierUsername: `financier${Math.floor(Math.random() * 100)}`,
+    };
+
+
+    try {
+      const response = await api.post("/", randomDuePayment);
+      setPayments((prevPayments) => [...prevPayments, response.data]);
+      alert("Random Due Payment created successfully!");
+    } catch (error) {
+      console.error("Error creating due payment:", error);
+      alert("Failed to create a random due payment. Please try again.");
+    }
+  };
+
+
+  const filteredPayments = payments.filter((payment) => {
+    if (filter === "all") return true;
+    return filter === "buyer"
+      ? payment.buyerUsername.toLowerCase().includes(search.toLowerCase())
+      : payment.financierUsername.toLowerCase().includes(search.toLowerCase());
+  });
+
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      {/* Header with Stats */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Due Collections</h1>
-        <p className="text-gray-600 mt-2">Track and manage incoming payments from buyers</p>
+    <div className="max-w-6xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-4">Due Payments</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
-          <div className="bg-gradient-to-br from-[#006A71] to-[#48A6A7] rounded-xl p-6 text-white">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-white/80">Total Due</p>
-                <h3 className="text-2xl font-bold mt-1">₹185.5L</h3>
-                <p className="text-sm mt-2">18 payments</p>
-              </div>
-              <DollarSign className="h-12 w-12 opacity-20" />
-            </div>
-          </div>
 
-          <div className="bg-white rounded-xl p-6 border border-gray-200">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-gray-600">Overdue</p>
-                <h3 className="text-2xl font-bold text-red-600 mt-1">₹45.2L</h3>
-                <p className="text-sm text-red-600 mt-2">5 payments</p>
-              </div>
-              <AlertTriangle className="h-12 w-12 text-red-200" />
-            </div>
-          </div>
+      {/* Error Message */}
+      {error && <div className="mb-4 text-red-600">{error}</div>}
 
-          <div className="bg-white rounded-xl p-6 border border-gray-200">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-gray-600">Due This Week</p>
-                <h3 className="text-2xl font-bold text-yellow-600 mt-1">₹85.8L</h3>
-                <p className="text-sm text-yellow-600 mt-2">8 payments</p>
-              </div>
-              <Clock className="h-12 w-12 text-yellow-200" />
-            </div>
-          </div>
 
-          <div className="bg-white rounded-xl p-6 border border-gray-200">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-gray-600">Collection Rate</p>
-                <h3 className="text-2xl font-bold text-green-600 mt-1">92%</h3>
-                <p className="text-sm text-green-600 mt-2">Last 30 days</p>
-              </div>
-              <CheckCircle2 className="h-12 w-12 text-green-200" />
-            </div>
-          </div>
-        </div>
+      {/* Search and Filter Options */}
+      <div className="flex items-center mb-4">
+        <input
+          type="text"
+          placeholder="Search Buyer or Financier..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-1/2 p-2 border rounded"
+        />
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="ml-4 p-2 border rounded"
+        >
+          <option value="all">All Payments</option>
+          <option value="buyer">By Buyer</option>
+          <option value="financier">By Financier</option>
+        </select>
       </div>
 
-      {/* Filters and Search */}
-      <div className="bg-white rounded-xl p-4 mb-6 flex flex-wrap gap-4 items-center justify-between">
-        <div className="flex space-x-2">
-          {['all', 'upcoming', 'overdue'].map((status) => (
-            <button
-              key={status}
-              onClick={() => setFilterStatus(status as any)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                ${filterStatus === status
-                  ? 'bg-[#006A71] text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+
+      {/* Loading Spinner */}
+      {loading && <div>Loading...</div>}
+
+
+      <div className="bg-white border rounded shadow">
+        <div className="grid grid-cols-5 font-semibold text-gray-700 border-b px-4 py-2 bg-gray-50">
+          <div>Invoice</div>
+          <div>Amount</div>
+          <div>Due Date</div>
+          <div>Status</div>
+          <div>Actions</div>
+        </div>
+
+
+        {/* Payments List */}
+        {filteredPayments.length === 0 && !loading ? (
+          <div className="p-4">No payments found.</div>
+        ) : (
+          filteredPayments.map((payment) => (
+            <div
+              key={payment.id}
+              className="grid grid-cols-5 px-4 py-3 border-b items-center text-sm"
             >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </button>
-          ))}
-        </div>
-
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search buyers or invoices..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-64 pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#006A71]"
-          />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-        </div>
-      </div>
-
-      {/* Due Payments List */}
-      <div className="space-y-4">
-        {duePayments.map(payment => (
-          <div key={payment.id} className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex justify-between items-start">
-              <div>
-                <div className="flex items-center space-x-3 mb-2">
-                  <span className="px-3 py-1 bg-[#F2EFE7] text-[#006A71] rounded-full text-sm font-medium">
-                    {payment.invoiceNumber}
-                  </span>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium border
-                    ${getStatusColor(payment.status, getDaysRemaining(payment.dueDate))}`}>
-                    {getDaysRemaining(payment.dueDate) < 0 
-                      ? `Overdue by ${Math.abs(getDaysRemaining(payment.dueDate))} days`
-                      : `Due in ${getDaysRemaining(payment.dueDate)} days`}
-                  </span>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-800">{payment.buyer.name}</h3>
-                <p className="text-gray-600">Credit Rating: {payment.buyer.creditRating}</p>
+              <div>{payment.invoiceNumber}</div>
+              <div>{formatCurrency(payment.amount)}</div>
+              <div>{payment.dueDate}</div>
+              <div
+                className={`flex items-center ${statusColor(payment.status)}`}
+              >
+                {statusIcon(payment.status)}
+                {payment.status.charAt(0).toUpperCase() +
+                  payment.status.slice(1)}
               </div>
               <div className="flex space-x-2">
+                {payment.status === "upcoming" && (
+                  <button
+                    onClick={() => handlePayment(payment.id)}
+                    className="px-4 py-2 text-white bg-blue-600 rounded"
+                  >
+                    Pay Now
+                  </button>
+                )}
                 <button
-                  onClick={() => handleSendReminder(payment)}
-                  className="px-4 py-2 bg-[#F2EFE7] text-[#006A71] rounded-lg hover:bg-[#9ACBD0] 
-                           transition-colors"
+                  onClick={() => handleEdit(payment)}
+                  className="px-4 py-2 text-white bg-yellow-600 rounded"
                 >
-                  <Bell size={20} />
+                  <Edit className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => window.location.href = `mailto:${payment.buyer.email}`}
-                  className="px-4 py-2 bg-[#F2EFE7] text-[#006A71] rounded-lg hover:bg-[#9ACBD0] 
-                           transition-colors"
+                  onClick={() => handleDelete(payment.id)}
+                  className="px-4 py-2 text-white bg-red-600 rounded"
                 >
-                  <SendHorizonal size={20} />
-                </button>
-                <button
-                  onClick={() => window.location.href = `tel:${payment.buyer.phone}`}
-                  className="px-4 py-2 bg-[#F2EFE7] text-[#006A71] rounded-lg hover:bg-[#9ACBD0] 
-                           transition-colors"
-                >
-                  <PhoneCall size={20} />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
+          ))
+        )}
+      </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6">
-              <div>
-                <p className="text-sm text-gray-500">Amount Due</p>
-                <p className="text-lg font-semibold text-gray-800">
-                  {formatCurrency(payment.amount)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Due Date</p>
-                <p className="text-lg font-semibold text-gray-800">
-                  {new Date(payment.dueDate).toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Issue Date</p>
-                <p className="text-lg font-semibold text-gray-800">
-                  {new Date(payment.invoice.issueDate).toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Contact Person</p>
-                <p className="text-lg font-semibold text-gray-800">
-                  {payment.buyer.contactPerson}
-                </p>
-              </div>
+
+      {/* Button to Create Random Due Payment */}
+      <button
+        onClick={createRandomDuePayment}
+        className="mt-4 px-4 py-2 text-white bg-green-600 rounded"
+      >
+        Create Random Due Payment
+      </button>
+
+
+      {/* Payment Details Modal (Optional) */}
+      {selectedPayment && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg w-96">
+            <h2 className="text-2xl font-bold mb-4">Payment Details</h2>
+            <div>
+              <strong>Invoice:</strong> {selectedPayment.invoiceNumber}
+            </div>
+            <div>
+              <strong>Amount:</strong> {formatCurrency(selectedPayment.amount)}
+            </div>
+            <div>
+              <strong>Due Date:</strong> {selectedPayment.dueDate}
+            </div>
+            <div>
+              <strong>Status:</strong>{" "}
+              {selectedPayment.status.charAt(0).toUpperCase() +
+                selectedPayment.status.slice(1)}
+            </div>
+            <div>
+              <strong>Buyer:</strong> {selectedPayment.buyerUsername}
+            </div>
+            <div>
+              <strong>Financier:</strong> {selectedPayment.financierUsername}
             </div>
 
-            <div className="flex justify-between items-center mt-6 pt-6 border-t border-gray-100">
-              <div className="flex space-x-3">
-                <a
-                  href={payment.invoice.pdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center px-3 py-2 bg-[#F2EFE7] text-[#006A71] rounded-lg
-                           hover:bg-[#9ACBD0] transition-colors text-sm"
-                >
-                  <FileText size={16} className="mr-2" />
-                  View Invoice
-                </a>
-                <button className="flex items-center px-3 py-2 bg-gray-100 text-gray-600 rounded-lg
-                                 hover:bg-gray-200 transition-colors text-sm"
-                >
-                  <ArrowUpRight size={16} className="mr-2" />
-                  Collection History
-                </button>
-              </div>
-              <div className="text-sm text-gray-500">
-                Last Reminder: {payment.collectionAttempts.length > 0 
-                  ? new Date(payment.collectionAttempts[0].date).toLocaleDateString()
-                  : 'No reminders sent'}
-              </div>
+
+            <div className="mt-4 flex justify-between">
+              <button
+                onClick={() => setSelectedPayment(null)}
+                className="px-4 py-2 bg-gray-600 text-white rounded"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => handlePayment(selectedPayment.id)}
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+              >
+                Mark as Paid
+              </button>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
+
 
 export default DuePayments;

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight, RefreshCw } from "lucide-react";
@@ -94,7 +95,7 @@ const LoginPage = () => {
     autoplay: true,
     autoplaySpeed: 5000,
     arrows: false,
-    customPaging: (i: number) => (
+    customPaging: () => (
       <div className="w-2 h-2 rounded-full bg-white/50 hover:bg-white/80 transition-all duration-200" />
     ),
   };
@@ -143,7 +144,7 @@ const LoginPage = () => {
         else if (role == "BUYER") {
           navigate("/buyer/dashboard");
         }else if (role == "FINANCIER") {
-          navigate("/buyer/dashboard");
+          navigate("/financier/dashboard");
         }
          else {
           // Default navigation if the role doesn't match expected ones

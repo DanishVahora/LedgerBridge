@@ -31,34 +31,34 @@ public class BidController {
 
 
     // 1. Place a Bid
-    @PostMapping
-    public ResponseEntity<?> placeBid(@Valid @RequestBody Bid bidRequest) {
-        Optional<Invoice> invoiceOpt = invoiceRepository.findById(bidRequest.getInvoice().getId());
-        Optional<Financier> financierOpt = financierRepository.findById(bidRequest.getFinancier().getId());
-
-
-        if (invoiceOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Invoice not found");
-        }
-
-
-        if (financierOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Financier not found");
-        }
-
-
-        Bid bid = Bid.builder()
-                .invoice(invoiceOpt.get())
-                .financier(financierOpt.get())
-                .bidAmount(bidRequest.getBidAmount())
-                .discountRate(bidRequest.getDiscountRate())
-                .status(Bid.BidStatus.PENDING)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-
-        return ResponseEntity.ok(bidRepository.save(bid));
-    }
+//    @PostMapping
+//    public ResponseEntity<?> placeBid(@Valid @RequestBody Bid bidRequest) {
+//        Optional<Invoice> invoiceOpt = invoiceRepository.findById(bidRequest.getInvoice().getId());
+//        Optional<Financier> financierOpt = financierRepository.findById(bidRequest.getFinancier().getId());
+//
+//
+//        if (invoiceOpt.isEmpty()) {
+//            return ResponseEntity.badRequest().body("Invoice not found");
+//        }
+//
+//
+//        if (financierOpt.isEmpty()) {
+//            return ResponseEntity.badRequest().body("Financier not found");
+//        }
+//
+//
+//        Bid bid = Bid.builder()
+//                .invoice(invoiceOpt.get())
+//                .financier(financierOpt.get())
+//                .bidAmount(bidRequest.getBidAmount())
+//                .discountRate(bidRequest.getDiscountRate())
+//                .status(Bid.BidStatus.PENDING)
+//                .createdAt(LocalDateTime.now())
+//                .build();
+//
+//
+//        return ResponseEntity.ok(bidRepository.save(bid));
+//    }
 
 
     // 2. Get All Bids
@@ -80,18 +80,18 @@ public class BidController {
 
 
     // 4. Get Bids by Financier ID
-    @GetMapping("/financier/{financierId}")
-    public ResponseEntity<?> getBidsByFinancier(@PathVariable Long financierId) {
-        Optional<Financier> financierOpt = financierRepository.findById(financierId);
-        if (financierOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Financier not found");
-        }
-
-
-        return ResponseEntity.ok(bidRepository.findAll().stream()
-                .filter(bid -> bid.getFinancier().getId().equals(financierId))
-                .toList());
-    }
+//    @GetMapping("/financier/{financierId}")
+//    public ResponseEntity<?> getBidsByFinancier(@PathVariable Long financierId) {
+//        Optional<Financier> financierOpt = financierRepository.findById(financierId);
+//        if (financierOpt.isEmpty()) {
+//            return ResponseEntity.badRequest().body("Financier not found");
+//        }
+//
+//
+//        return ResponseEntity.ok(bidRepository.findAll().stream()
+//                .filter(bid -> bid.getFinancier().getId().equals(financierId))
+//                .toList());
+//    }
 
 
     // 5. Update Bid Status

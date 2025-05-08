@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FileText, DollarSign, Clock, CheckCircle } from 'lucide-react';
+// import { FileText, DollarSign, Clock, CheckCircle } from 'lucide-react';
 import DashboardStats from '../../components/dashboard/DashboardStats';
 import FinanceChart from '../../components/dashboard/FinanceChart';
 import { useUserContext } from '../../context/UserContext';
@@ -8,9 +8,11 @@ import { useUserContext } from '../../context/UserContext';
 interface Invoice {
   id: string;
   buyer: string;
+  companyName: string; // Added the missing property
   amount: string;
   status: string;
   date: string;
+  uploadDate: string; // Added the missing property
 }
 
 const SellerDashboard: React.FC = () => {
@@ -18,12 +20,12 @@ const SellerDashboard: React.FC = () => {
   const supplierUsername = user?.userName || '';
 
   // Stats data can be fetched or remain static
-  const stats = [
-    { title: 'Total Invoices', value: '156', icon: <FileText />, color: '#48A6A7' },
-    { title: 'Total Value', value: '₹45.2L', icon: <DollarSign />, color: '#006A71' },
-    { title: 'Pending', value: '12', icon: <Clock />, color: '#9ACBD0' },
-    { title: 'Funded', value: '142', icon: <CheckCircle />, color: '#48A6A7' }
-  ];
+  // const stats = [
+  //   { title: 'Total Invoices', value: '156', icon: <FileText />, color: '#48A6A7' },
+  //   { title: 'Total Value', value: '₹45.2L', icon: <DollarSign />, color: '#006A71' },
+  //   { title: 'Pending', value: '12', icon: <Clock />, color: '#9ACBD0' },
+  //   { title: 'Funded', value: '142', icon: <CheckCircle />, color: '#48A6A7' }
+  // ];
 
   const [recentInvoices, setRecentInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -58,7 +60,7 @@ const SellerDashboard: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <DashboardStats stats={stats} />
+      <DashboardStats />
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -93,7 +95,7 @@ const SellerDashboard: React.FC = () => {
                 key={invoice.id}
                 className="border-b border-gray-100 hover:bg-[#F2EFE7]/50 transition-colors"
               >
-                <td className="py-4">{invoice.invoiceId}</td>
+                <td className="py-4">{invoice.id}</td>
                 <td className="py-4">{invoice.companyName}</td>
                 <td className="py-4">₹{invoice.amount}</td>
                 <td className="py-4">{invoice.uploadDate}</td>
@@ -131,10 +133,10 @@ const SellerDashboard: React.FC = () => {
               <tbody>
                 {recentInvoices.map((invoice) => (
                   <tr
-                    key={invoice.invoiceId}
+                    key={invoice.id}
                     className="border-b border-gray-100 hover:bg-[#F2EFE7]/50 transition-colors"
                   >
-                    <td className="py-4">{invoice.invoiceId}</td>
+                    <td className="py-4">{invoice.id}</td>
                     <td className="py-4">{invoice.companyName}</td>
                     <td className="py-4">₹{invoice.amount}</td>
                     <td className="py-4">

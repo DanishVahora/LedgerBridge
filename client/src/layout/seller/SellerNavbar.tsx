@@ -3,7 +3,6 @@ import {
   LayoutDashboard, 
   FileUp, 
   Gavel, 
-  FileText, 
   Settings, 
   LogOut,
   ChevronRight,

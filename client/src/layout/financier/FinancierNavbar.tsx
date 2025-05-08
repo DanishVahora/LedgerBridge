@@ -4,7 +4,6 @@ import {
   FileText,
   WalletCards,
   History,
-  GanttChartSquare,
   BadgeDollarSign,
   LogOut,
   ChevronRight,
@@ -32,11 +31,11 @@ const FinancierNavbar = ({ onClose }: FinancierNavbarProps) => {
           path: '/financier/invoices/factoring',
           icon: <BadgeDollarSign size={20} />
         },
-        {
-          title: 'Reverse Factoring',
-          path: '/financier/invoices/reverse',
-          icon: <GanttChartSquare size={20} />
-        }
+        // {
+        //   title: 'Reverse Factoring',
+        //   path: '/financier/invoices/reverse',
+        //   icon: <GanttChartSquare size={20} />
+        // }
       ]
     },
     {

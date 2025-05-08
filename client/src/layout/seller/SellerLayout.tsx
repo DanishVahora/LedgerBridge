@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import SellerNavbar from './SellerNavbar';
-import TopNavbar from './TopNavbar';
 
 const SellerLayout = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -39,7 +38,7 @@ const SellerLayout = () => {
       )}
 
       {/* Top Navbar */}
-      <TopNavbar />
+      {/* <TopNavbar /> */}
 
       {/* Navigation Sidebar */}
       <div className={`

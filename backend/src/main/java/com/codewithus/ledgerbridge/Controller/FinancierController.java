@@ -1,6 +1,8 @@
 package com.codewithus.ledgerbridge.Controller;
 
 
+import com.codewithus.ledgerbridge.Dto.BidRequest;
+import com.codewithus.ledgerbridge.Dto.TransactionGroupedResponse;
 import com.codewithus.ledgerbridge.Entity.*;
 import com.codewithus.ledgerbridge.Repository.*;
 import jakarta.validation.Valid;
@@ -26,6 +28,7 @@ public class FinancierController {
     private final BidRepository bidRepository;
 
 
+    private final TransactionRepository transactionRepository;
     // 1. View all approved invoices
     @GetMapping("/invoices")
     public ResponseEntity<List<Invoice>> getAllApprovedInvoices() {
@@ -35,12 +38,11 @@ public class FinancierController {
 
 
     // 2. Place a bid on a specific invoice
-    @PostMapping("/invoices/{invoiceId}/bid")
+    @PostMapping("/invoices/{invoiceId}/{username}/bid")
     public ResponseEntity<?> placeBid(
             @PathVariable Long invoiceId,
-            @RequestParam Long financierId,
-            @RequestParam BigDecimal bidAmount,
-            @RequestParam BigDecimal discountRate
+            @PathVariable String username,
+            @RequestBody BidRequest bidRequest
     ) {
         Optional<Invoice> invoiceOpt = invoiceRepository.findById(invoiceId);
         if (invoiceOpt.isEmpty()) {
@@ -63,7 +65,7 @@ public class FinancierController {
         }
 
 
-        Optional<Financier> financierOpt = financierRepository.findById(financierId);
+        Optional<Financier> financierOpt = financierRepository.findByUserName(username);
         if (financierOpt.isEmpty()) {
             return ResponseEntity.badRequest().body("Financier not found");
         }
@@ -72,15 +74,17 @@ public class FinancierController {
         Financier financier = financierOpt.get();
 
 
-        // Create the bid
+        // Create the bid and save it
         Bid bid = Bid.builder()
                 .invoice(invoice)
-                .financier(financier)
-                .bidAmount(bidAmount)
-                .discountRate(discountRate)
+                .fusername(username)
+                .bidAmount(bidRequest.getBidAmount())
+                .discountRate(bidRequest.getDiscountRate())
                 .status(Bid.BidStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .creditedTo(invoice.isFactoring() ? "Supplier" : "Buyer")
+                .validityPeriod(bidRequest.getValidityPeriod())  // Save validity period
+                .terms(bidRequest.getTerms())                    // Save terms
                 .build();
 
 
@@ -99,4 +103,13 @@ public class FinancierController {
     }
 
 
+    @GetMapping("/grouped")
+    public ResponseEntity<TransactionGroupedResponse> getGroupedTransactions() {
+        List<Transaction> pending = transactionRepository.findByStatusOrderByTransactionTimeDesc(Transaction.TransactionStatus.PENDING);
+        List<Transaction> success = transactionRepository.findByStatusOrderByTransactionTimeDesc(Transaction.TransactionStatus.SUCCESS);
+
+
+        TransactionGroupedResponse response = new TransactionGroupedResponse(pending, success);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -1,14 +1,9 @@
 import { useState } from 'react';
 import { 
-  DollarSign, 
-  Calendar, 
-  Building,
-  UserCheck,
   AlertCircle,
   CheckCircle,
   Clock,
   ArrowUpRight,
-  Filter,
   Search,
   FileText,
   BadgeIndianRupee
@@ -44,13 +39,11 @@ interface PendingPayment {
 }
 
 const PendingPayment = () => {
-  const [selectedPayment, setSelectedPayment] = useState<PendingPayment | null>(null);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  
   const [filterPriority, setFilterPriority] = useState<'all' | 'high' | 'medium' | 'low'>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const formatCurrency = (amount: number) => 
-    `₹${(amount/100000).toFixed(1)}L`;
+  
 
   const getPriorityColor = (priority: string) => {
     const colors = {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -160,7 +160,7 @@ const SupplierRegister: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [panExists, setPanExists] = useState(false);
+  const [panExists,] = useState(false);
   const [mobileExists, setMobileExists] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -179,11 +179,12 @@ const SupplierRegister: React.FC = () => {
   const [otpType, setOtpType] = useState<"mobile" | "email">("mobile");
 
   // Registration success state
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [registrationSuccess, ] = useState(false);
 
   // Handle form field changes
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
+    e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }> | 
+    { target: { name: string; value: unknown } }
   ) => {
     const { name, value } = e.target;
     if (!name) return;
@@ -191,26 +192,7 @@ const SupplierRegister: React.FC = () => {
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
   // Validate PAN existence
-  const checkPan = async () => {
-    if (!PATTERNS.PAN.test(formData.businessPan)) return;
-    try {
-      const { data } = await api.get("/check/supplier/pan", {
-        params: { pan: formData.businessPan },
-      });
-      if (data.exists) {
-        setPanExists(true);
-        setErrors((prev) => ({
-          ...prev,
-          businessPan: "PAN already registered",
-        }));
-      } else {
-        setPanExists(false);
-        setErrors((prev) => ({ ...prev, businessPan: "" }));
-      }
-    } catch {
-      // ignore
-    }
-  };
+  
 
   // Validate mobile existence
   const checkMobile = async () => {
@@ -235,7 +217,7 @@ const SupplierRegister: React.FC = () => {
   };
 
   // Handle blur events
-  const handlePanBlur = () => checkPan();
+  
   const handleMobileBlur = () => checkMobile();
   // Fetch business information based on PAN
   const fetchBusinessInfo = async () => {
@@ -253,10 +235,10 @@ const SupplierRegister: React.FC = () => {
       // This would be a real API call to fetch business details based on PAN
       // For demo, we'll simulate it
       const mockResponse = {
-        businessName: "Demo Business Pvt Ltd",
+        businessName: "Sahara PVT LTD",
         gstin: "27AAAAA0000A1Z5",
         registeredAddress:
-          "123 Business Park, Corporate Avenue, Mumbai, Maharashtra - 400001",
+          "123, Sahara Street, Bhalej Road, Anand, 388001, Gujarat",
       };
 
       // Simulating API delay
@@ -381,6 +363,7 @@ const SupplierRegister: React.FC = () => {
           contactEmail: "Please enter a valid email",
         });
         setSendingOtp(false);
+        console.log(mobileVerified, emailVerified)
         return;
       }
 
@@ -479,8 +462,7 @@ const SupplierRegister: React.FC = () => {
                 name="businessPan"
                 label="Business PAN*"
                 value={formData.businessPan}
-                onBlur={handlePanBlur}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e as React.ChangeEvent<{ name: string; value: unknown }>)}
                 error={!!errors.businessPan}
                 helperText={errors.businessPan}
                 InputProps={{
@@ -519,7 +501,7 @@ const SupplierRegister: React.FC = () => {
                   ),
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Button
+                      {/* <Button
                         size="small"
                         onClick={() => sendOtp("mobile")}
                         disabled={sendingOtp || mobileVerified}
@@ -535,7 +517,7 @@ const SupplierRegister: React.FC = () => {
                         ) : (
                           "Verify"
                         )}
-                      </Button>
+                      </Button> */}
                     </InputAdornment>
                   ),
                 }}
@@ -633,7 +615,7 @@ const SupplierRegister: React.FC = () => {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Button
+                      {/* <Button
                         size="small"
                         onClick={() => sendOtp("email")}
                         disabled={sendingOtp || emailVerified}
@@ -649,7 +631,7 @@ const SupplierRegister: React.FC = () => {
                         ) : (
                           "Verify"
                         )}
-                      </Button>
+                      </Button> */}
                     </InputAdornment>
                   ),
                 }}
@@ -976,7 +958,7 @@ const SupplierRegister: React.FC = () => {
         </Box>
 
         <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
-          {steps.map((step, index) => (
+          {steps.map((step) => (
             <Step key={step.label}>
               <StepLabel
                 StepIconProps={{

@@ -1,4 +1,4 @@
-import { Menu, Bell, User, Search } from 'lucide-react';
+import { Menu, Bell, Search } from 'lucide-react';
 
 interface FinancierTopNavbarProps {
   onMenuClick: () => void;
@@ -31,7 +31,7 @@ const FinancierTopNavbar = ({ onMenuClick }: FinancierTopNavbarProps) => {
           <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
         </button>
         
-        <div className="flex items-center space-x-3 pl-4 border-l border-gray-200">
+        {/* <div className="flex items-center space-x-3 pl-4 border-l border-gray-200">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-medium text-gray-700">John Smith</p>
             <p className="text-xs text-[#006A71]">ABC Finance Ltd</p>
@@ -39,7 +39,7 @@ const FinancierTopNavbar = ({ onMenuClick }: FinancierTopNavbarProps) => {
           <button className="p-2 bg-[#F2EFE7] rounded-lg text-[#006A71] hover:bg-[#9ACBD0] transition-colors">
             <User size={20} />
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
