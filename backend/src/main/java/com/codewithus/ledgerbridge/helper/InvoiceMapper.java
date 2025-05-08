@@ -29,6 +29,7 @@ public class InvoiceMapper {
                 .remarks(dto.getRemarks())
                 .invoiceDocument(documentBytes)
                 .status(Invoice.InvoiceStatus.PENDING)
+                .factoring(dto.isFactoringType())
                 .build();
     }
 

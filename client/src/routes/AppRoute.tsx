@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
-import SupplierRegister from '../pages/RegisterSupplier';
+import SupplierRegister from '../pages/seller/RegisterSupplier';
 import BuyerRegister from '../pages/buyer/RegisterBuyer';
 import LandingPage from '../pages/LandingPage';
 import SellerLayout from '../layout/seller/SellerLayout';
 import SellerDashboard from '../pages/seller/SellerDashboard';
 import UploadInvoice from '../pages/seller/UploadInvoice';
 import BidsAndOffers from '../pages/seller/BidsAndOffers';
-import FinancierRegister from '../pages/RegisterFinancier';
+import FinancierRegister from '../pages/financier/RegisterFinancier';
 import VerificationPage from '../pages/VerificationPage';
 import BuyerLayout from '../layout/buyer/BuyerLayout';
 import BuyerDashboard from '../pages/buyer/BuyerDashboard';
@@ -20,6 +20,7 @@ import ReFactoringRequest from '../pages/financier/ReFactoringRequest';
 import PendingPayment from '../pages/financier/PendingPayment';
 import DuePayments from '../pages/financier/DuePayments';
 import FinancierHistory from '../pages/financier/FinancierHistory';
+import LoginPage from '../pages/LoginPage';
 
 
 export const AppRoute = () => (
@@ -29,6 +30,8 @@ export const AppRoute = () => (
     <Route path="/register/buyer" element={<BuyerRegister />} />
     <Route path="/register/financier" element={<FinancierRegister />} />
     <Route path="verify" element={<VerificationPage />} />
+    <Route path="/login" element={<LoginPage />} />
+
 
     {/* Seller Routes */}
     <Route path="/seller" element={<SellerLayout />}>

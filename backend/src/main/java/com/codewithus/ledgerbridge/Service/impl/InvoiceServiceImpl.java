@@ -2,6 +2,9 @@
 package com.codewithus.ledgerbridge.Service.impl;
 
 import com.codewithus.ledgerbridge.Dto.InvoiceActionDto;
+import com.codewithus.ledgerbridge.Dto.InvoiceRecentDto;
+import com.codewithus.ledgerbridge.Entity.Buyer;
+import com.codewithus.ledgerbridge.Repository.BuyerRepository;
 import com.codewithus.ledgerbridge.Service.InvoiceService;
 import com.codewithus.ledgerbridge.Dto.InvoiceCreateDto;
 import com.codewithus.ledgerbridge.Dto.InvoiceDto;
@@ -14,7 +17,6 @@ import com.codewithus.ledgerbridge.helper.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,13 +26,14 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
     private final InvoiceIdGenerator invoiceIdGenerator;
-
+    private final BuyerRepository buyerRepository;
     @Autowired
     public InvoiceServiceImpl(InvoiceRepository invoiceRepository,
-                              InvoiceIdGenerator invoiceIdGenerator) {
+                              InvoiceIdGenerator invoiceIdGenerator, BuyerRepository buyerRepository) {
         this.invoiceRepository = invoiceRepository;
         this.invoiceIdGenerator  = invoiceIdGenerator;
 
+        this.buyerRepository = buyerRepository;
     }
 
 
@@ -104,5 +107,23 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         Invoice updated = invoiceRepository.save(inv);
         return InvoiceMapper.toDto(updated);
+    }
+
+    @Override
+    public List<InvoiceRecentDto> getRecentInvoices(String supplierUsername) {
+
+        return invoiceRepository.findTop10BySupplierusernameOrderByUploadDateDesc(supplierUsername)
+                .stream()
+                .map(inv -> {
+                    Buyer buyer = buyerRepository.findByUserNameOrContactEmail(inv.getBuyerusername());
+                    return new InvoiceRecentDto(
+                            inv.getInvoiceId(),
+                            buyer.getCompanyName(),
+                            inv.getAmount(),
+                            inv.getStatus(),
+                            inv.getUploadDate()
+                    );
+                })
+                .collect(Collectors.toList());
     }
 }

@@ -3,17 +3,14 @@ import { useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import axios from "axios";
 
-
 const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}/api/auth`,
   headers: { "Content-Type": "application/json" },
 });
 
-
 interface VerificationPageProps {
   // You can add props here if needed
 }
-
 
 export const VerificationPage: React.FC<VerificationPageProps> = () => {
   const [otp, setOtp] = useState<string>("");
@@ -25,17 +22,14 @@ export const VerificationPage: React.FC<VerificationPageProps> = () => {
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState<number>(5);
 
-
   useEffect(() => {
     let timer: number; // Changed to number type for browser environments
-
 
     if (verificationSuccess && countdown > 0) {
       timer = window.setTimeout(() => setCountdown(countdown - 1), 1000);
     } else if (verificationSuccess && countdown === 0) {
       navigate("/login");
     }
-
 
     return () => {
       if (timer) {
@@ -44,7 +38,6 @@ export const VerificationPage: React.FC<VerificationPageProps> = () => {
     };
   }, [verificationSuccess, countdown, navigate]);
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -52,23 +45,19 @@ export const VerificationPage: React.FC<VerificationPageProps> = () => {
       const activationToken = sessionStorage.getItem("activationToken");
       const role = sessionStorage.getItem("role");
 
-
       const { data } = await api.post(`/verify/${role}`, {
         otp,
         activationToken,
       });
-
 
       console.log(data.username);
       setUsername(data.username);
       setVerificationSuccess(true);
       setBtnLoading(false);
 
-
       // Clear session storage except username if needed
       sessionStorage.removeItem("activationToken");
       sessionStorage.removeItem("role");
-
 
       // Redirect after 5 seconds
       setTimeout(() => {
@@ -80,11 +69,9 @@ export const VerificationPage: React.FC<VerificationPageProps> = () => {
     }
   };
 
-
   const onChange = (value: string | null) => {
     setShow(value !== null);
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -134,7 +121,6 @@ export const VerificationPage: React.FC<VerificationPageProps> = () => {
               </p>
             </div>
 
-
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label
@@ -162,14 +148,12 @@ export const VerificationPage: React.FC<VerificationPageProps> = () => {
                 </p>
               </div>
 
-
               <div className="flex justify-center">
                 <ReCAPTCHA
                   sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
                   onChange={onChange}
                 />
               </div>
-
 
               {show && (
                 <div>
@@ -217,6 +201,5 @@ export const VerificationPage: React.FC<VerificationPageProps> = () => {
     </div>
   );
 };
-
 
 export default VerificationPage;

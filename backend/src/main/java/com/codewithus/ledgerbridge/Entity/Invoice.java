@@ -66,9 +66,20 @@ public class Invoice {
     @Size(max = 100, message = "ApprovedBy must not exceed 100 characters")
     private String approvedBy;
 
+
     public enum InvoiceStatus {
         PENDING,
         APPROVED,
         REJECTED
     }
+    private  boolean factoring;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
+
+
+    @ManyToOne
+    @JoinColumn(name = "buyer_id")
+    private Buyer buyer;
 }

@@ -18,6 +18,7 @@ public class InvoiceCreateDto {
     private String buyerusername;
     private BigDecimal amount;
     private LocalDate dueDate;
+    private boolean factoringType;
     private LocalDate uploadDate;
     private String remarks;
     private MultipartFile invoiceDocument;

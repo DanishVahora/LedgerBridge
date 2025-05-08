@@ -445,6 +445,7 @@ const BuyerRegister: React.FC = () => {
     }
   };
 
+
   // Render the current step content
   const getStepContent = (step: number) => {
     switch (step) {

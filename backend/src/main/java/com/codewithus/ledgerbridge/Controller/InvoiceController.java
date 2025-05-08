@@ -1,9 +1,11 @@
 package com.codewithus.ledgerbridge.Controller;
 import com.codewithus.ledgerbridge.Dto.InvoiceActionDto;
+import com.codewithus.ledgerbridge.Dto.InvoiceRecentDto;
 import com.codewithus.ledgerbridge.Entity.Invoice;
 import com.codewithus.ledgerbridge.Service.InvoiceService;
 import com.codewithus.ledgerbridge.Dto.InvoiceCreateDto;
 import com.codewithus.ledgerbridge.Dto.InvoiceDto;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.validation.Valid;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/invoices")
 public class InvoiceController {
@@ -23,9 +26,13 @@ public class InvoiceController {
     }
 
     // 1) Create
-    @PostMapping("/create")
+    @PostMapping(
+            path = "/create",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<InvoiceDto> createInvoice(
-            @Valid @RequestBody InvoiceCreateDto dto) {
+            @Valid @ModelAttribute InvoiceCreateDto dto) {
+
         InvoiceDto created = invoiceService.createInvoice(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -69,6 +76,12 @@ public class InvoiceController {
             @Valid @RequestBody InvoiceActionDto action) {
         InvoiceDto updated = invoiceService.rejectInvoice(invoiceId, action);
         return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping("/recent/{supplierUsername}")
+    public List<InvoiceRecentDto> getRecent(@PathVariable String supplierUsername) {
+        System.out.println("inside controller");
+        return invoiceService.getRecentInvoices(supplierUsername);
     }
 
 }

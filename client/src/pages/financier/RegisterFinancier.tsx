@@ -294,7 +294,6 @@ const FinancierRegister: React.FC = () => {
     }
   };
 
-  // Submit registration
   const handleSubmit = async () => {
     if (!validateCurrentStep()) return;
     setLoading(true);
@@ -310,6 +309,8 @@ const FinancierRegister: React.FC = () => {
       setLoading(false);
     }
   };
+
+
 
   // Step content renderer
   const getStepContent = (step: number) => {

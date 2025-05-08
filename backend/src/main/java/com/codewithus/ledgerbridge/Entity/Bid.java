@@ -56,5 +56,6 @@ public class Bid {
         ACCEPTED,
         REJECTED
     }
-
+    @Column(name = "credited_to")
+    private String creditedTo; // Either "Buyer" or "Supplier"
 }

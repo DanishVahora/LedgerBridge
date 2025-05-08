@@ -3,7 +3,6 @@ import { FileUp, X, Upload, File } from 'lucide-react';
 import axios from 'axios';
 import { useUserContext } from '../../context/UserContext';
 
-
 interface InvoiceFormData {
   supplierusername: string;
   invoiceNumber: string;
@@ -13,18 +12,19 @@ interface InvoiceFormData {
   remarks: string;
   uploadDate: string;
   invoiceDocument: File | null;
-  factoringType: 'factoring' | 'reverse_factoring' | ''; // Add this new field
+  factoringType: 'factoring' | 'reverse_factoring' | '';
 }
+
 interface Buyer {
   id: number;
   userName: string;
   companyName: string;
 }
+
 const UploadInvoice = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [loading, setLoading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { user } = useUserContext();
+
   const [formData, setFormData] = useState<InvoiceFormData>({
     supplierusername: '',
     invoiceNumber: '',
@@ -34,15 +34,17 @@ const UploadInvoice = () => {
     remarks: '',
     uploadDate: '',
     invoiceDocument: null,
-    factoringType: '' // Add initial value
+    factoringType: ''
   });
 
-
-  // Buyers list state
   const [buyers, setBuyers] = useState<Buyer[]>([]);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // ← NEW: only show error after a bad submit
+  const [showFactoringError, setShowFactoringError] = useState(false);
+
   useEffect(() => {
-    console.log('User');
-    console.log(user);
     axios
       .get<Buyer[]>(`${import.meta.env.VITE_API_BASE_URL}/api/buyers`)
       .then(res => setBuyers(res.data))
@@ -51,19 +53,18 @@ const UploadInvoice = () => {
         alert('Could not fetch buyers list.');
       });
   }, []);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.type === 'application/pdf') {
         setFormData(prev => ({ ...prev, invoiceDocument: file }));
-        const fileUrl = URL.createObjectURL(file);
-        setPreviewUrl(fileUrl);
+        setPreviewUrl(URL.createObjectURL(file));
       } else {
         alert('Please upload a PDF file');
       }
     }
   };
-
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -72,38 +73,38 @@ const UploadInvoice = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // ← NEW: if no type chosen, show error and stop
+    if (!formData.factoringType) {
+      setShowFactoringError(true);
+      return;
+    }
+
     setLoading(true);
- 
+
     try {
-
-
       const payload = new FormData();
-      payload.append('supplierusername', user?.userName ?? "Supplier_shahil_478587");  
-      payload.append('buyerusername', formData.buyerusername);  
+      payload.append('supplierusername', user?.userName ?? "Supplier_shahil_478587");
+      payload.append('buyerusername', formData.buyerusername);
       payload.append('amount', formData.amount);
       payload.append('dueDate', formData.dueDate);
-      payload.append('factoringType', formData.factoringType); // Add this line
+      payload.append('factoringType', formData.factoringType === 'factoring' ? 'false' : 'true');
       const today = new Date().toISOString().split('T')[0];
       payload.append('uploadDate', today);
       payload.append('remarks', formData.remarks);
       if (formData.invoiceDocument) {
         payload.append('invoiceDocument', formData.invoiceDocument);
       }
- 
 
-
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/api/invoices/create`,
         payload
       );
- 
-      console.log(response);
+
       alert('Invoice uploaded successfully!');
- 
-      // Reset form
+
       setFormData({
         supplierusername: '',
         invoiceNumber: '',
@@ -113,10 +114,12 @@ const UploadInvoice = () => {
         remarks: '',
         uploadDate: '',
         invoiceDocument: null,
-        factoringType: '' // Add initial value
+        factoringType: ''
       });
       setPreviewUrl(null);
- 
+
+      // ← NEW: reset error flag on success
+      setShowFactoringError(false);
     } catch (error) {
       console.error(error);
       alert('Error uploading invoice');
@@ -124,7 +127,6 @@ const UploadInvoice = () => {
       setLoading(false);
     }
   };
-
 
   return (
     <div className="p-6 bg-[#F2EFE7] min-h-screen">
@@ -134,10 +136,9 @@ const UploadInvoice = () => {
           <p className="text-gray-600">Upload a new invoice for financing</p>
         </div>
 
-
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="bg-white p-6 rounded-xl shadow-sm">
-            {/* Factoring Type Selection - Add this section first */}
+            {/* Factoring Type Selection */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Select Financing Type *
@@ -145,7 +146,10 @@ const UploadInvoice = () => {
               <div className="grid grid-cols-2 gap-4">
                 <button
                   type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, factoringType: 'factoring' }))}
+                  onClick={() => {
+                    setFormData(prev => ({ ...prev, factoringType: 'factoring' }));
+                    setShowFactoringError(false);
+                  }}
                   className={`p-4 rounded-lg border-2 transition-all ${
                     formData.factoringType === 'factoring'
                       ? 'border-[#006A71] bg-[#F2EFE7] text-[#006A71]'
@@ -162,7 +166,10 @@ const UploadInvoice = () => {
 
                 <button
                   type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, factoringType: 'reverse_factoring' }))}
+                  onClick={() => {
+                    setFormData(prev => ({ ...prev, factoringType: 'reverse_factoring' }));
+                    setShowFactoringError(false);
+                  }}
                   className={`p-4 rounded-lg border-2 transition-all ${
                     formData.factoringType === 'reverse_factoring'
                       ? 'border-[#006A71] bg-[#F2EFE7] text-[#006A71]'
@@ -177,7 +184,8 @@ const UploadInvoice = () => {
                   </div>
                 </button>
               </div>
-              {!formData.factoringType && (
+              {/* ← NEW: only show after one failed submit */}
+              {showFactoringError && (
                 <p className="mt-2 text-sm text-red-500">
                   Please select a financing type
                 </p>
@@ -210,7 +218,7 @@ const UploadInvoice = () => {
                       type="button"
                       onClick={() => {
                         setPreviewUrl(null);
-                        setFormData(prev => ({ ...prev, file: null }));
+                        setFormData(prev => ({ ...prev, invoiceDocument: null }));
                       }}
                       className="text-red-500 hover:text-red-700"
                     >
@@ -228,7 +236,6 @@ const UploadInvoice = () => {
               </div>
             </div>
 
-
             {/* Form Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -241,13 +248,14 @@ const UploadInvoice = () => {
                   value={formData.invoiceNumber}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#48A6A7] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#48A6A7]"
                 />
               </div>
 
-
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Select Buyer</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Buyer
+                </label>
                 <select
                   name="buyerusername"
                   value={formData.buyerusername}
@@ -264,7 +272,6 @@ const UploadInvoice = () => {
                 </select>
               </div>
 
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Amount (₹)
@@ -277,10 +284,9 @@ const UploadInvoice = () => {
                   required
                   min="0"
                   step="0.01"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#48A6A7] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#48A6A7]"
                 />
               </div>
-
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -292,10 +298,9 @@ const UploadInvoice = () => {
                   value={formData.dueDate}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#48A6A7] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#48A6A7]"
                 />
               </div>
-
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -306,12 +311,11 @@ const UploadInvoice = () => {
                   value={formData.remarks}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#48A6A7] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#48A6A7]"
                 />
               </div>
             </div>
           </div>
-
 
           <div className="flex justify-end">
             <button
@@ -333,6 +337,5 @@ const UploadInvoice = () => {
     </div>
   );
 };
-
 
 export default UploadInvoice;
